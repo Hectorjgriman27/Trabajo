@@ -3,6 +3,7 @@ import { getSession } from 'next-auth/react';
 
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
+  // baseURL: 'https://culturizate.herokuapp.com/',
 });
 
 instance.interceptors.request.use(async function (config) {

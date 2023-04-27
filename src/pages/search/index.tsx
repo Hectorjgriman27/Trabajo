@@ -59,7 +59,6 @@ const Search = ({ categories }) => {
   });
   const { data: eventSchedules } = useEventScheduleTimetables();
   const category = categories?.find((item) => item._id == queryObj?.category);
-  console.log(data?.pages?.map((page) => page.items));
   useEffect(() => {
     setPagination({ ...queryObj, page: 1, size: 50 });
     refetch();
@@ -74,7 +73,7 @@ const Search = ({ categories }) => {
     queryObj?.size,
     queryObj?.address,
   ]);
-
+  console.log(data?.pages?.reduce((acc, curr) => curr.total + acc, 0));
   return (
     <div className="-mt-8 mb-44">
       <Hero
@@ -120,17 +119,20 @@ const Search = ({ categories }) => {
           />
           {/* {data?.pages?.length == 0 && isLoading == false && query != '' ? ( */}
           <div className="col-span-6 space-y-10 md:col-span-4">
-            {data?.pages?.length == 0 && !isLoading && query != '' && (
-              <div className="flex flex-col gap-2">
-                <Title level="h5">
-                  {t('commons.search_no_results', {
-                    query,
-                  })}
-                </Title>
-                <p>{t('commons.check_words')}</p>
-                <hr className="border-gray-400" />
-              </div>
-            )}
+            {data?.pages?.reduce((acc, curr) => curr.items.length + acc, 0) ==
+              0 &&
+              !isLoading &&
+              query != '' && (
+                <div className="flex flex-col gap-2">
+                  <Title level="h5">
+                    {t('commons.search_no_results', {
+                      query,
+                    })}
+                  </Title>
+                  <p>{t('commons.check_words')}</p>
+                  <hr className="border-gray-400" />
+                </div>
+              )}
 
             <ListCardEvent
               categories={categories}
@@ -144,15 +146,22 @@ const Search = ({ categories }) => {
               hasNextPage={hasNextPage}
               fetchNextPage={fetchNextPage}
               title={
-                data?.pages?.length == 0 && queryObj?.query != ''
-                  ? t('commons.recommended_events')
-                  : t('commons.results', {
+                queryObj?.query &&
+                data?.pages?.reduce(
+                  (acc, curr) => curr.items.length + acc,
+                  0
+                ) != 0
+                  ? t('commons.results', {
                       query: queryObj?.query as string,
                       length: data?.pages?.[0]?.total,
                     })
+                  : t('commons.recommended_events')
               }
               items={
-                data?.pages?.length == 0
+                data?.pages?.reduce(
+                  (acc, curr) => curr.items.length + acc,
+                  0
+                ) != 0
                   ? data?.pages?.flatMap((page) =>
                       page.items.map((item) => ({
                         // image: item.schedule_id.event_id.images.picture,

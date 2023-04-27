@@ -10,6 +10,8 @@ import { ColumnsTicketSubscriptionList } from '@/components/admin/tables/columns
 import { Heading } from '@/components/headers/admin/heading';
 // Import Interface
 import { Event as EventInterface } from '@/interfaces/event';
+import { useSeasonTickets } from '@/hooks/season_tickets';
+import axios from '@/lib/axios';
 
 const TicketSubscriptionList = () => {
   const ts = useTranslations('Panel_SideBar');
@@ -42,6 +44,9 @@ const TicketSubscriptionList = () => {
     ],
     []
   );
+
+  const { data: subscriptions } = useSeasonTickets();
+  console.log(subscriptions);
   const columns = ColumnsTicketSubscriptionList();
 
   return (
